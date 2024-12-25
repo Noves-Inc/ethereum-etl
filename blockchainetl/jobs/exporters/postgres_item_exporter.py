@@ -26,7 +26,6 @@ from sqlalchemy import create_engine
 
 from blockchainetl.jobs.exporters.converters.composite_item_converter import CompositeItemConverter
 
-
 class PostgresItemExporter:
 
     def __init__(self, connection_url, item_type_to_insert_stmt_mapping, converters=(), print_sql=True):
@@ -36,6 +35,8 @@ class PostgresItemExporter:
         self.print_sql = print_sql
 
         self.engine = self.create_engine()
+
+        self.connection = self.engine.connect()
 
     def open(self):
         pass
@@ -49,6 +50,17 @@ class PostgresItemExporter:
                 connection = self.engine.connect()
                 converted_items = list(self.convert_items(item_group))
                 connection.execute(insert_stmt, converted_items)
+
+    def export_item(self, item, publish_to_topic=False):
+        
+        insert_stmt = self.item_type_to_insert_stmt_mapping[item["type"]]
+        converted_items = list(self.convert_items([item]))
+
+        res = self.connection.execute(
+            insert_stmt, converted_items
+        )
+        self.connection.commit()
+
 
     def convert_items(self, items):
         for item in items:

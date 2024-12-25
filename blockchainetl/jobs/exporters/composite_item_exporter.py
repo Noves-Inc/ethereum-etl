@@ -66,7 +66,7 @@ class CompositeItemExporter:
         if exporter is None:
             raise ValueError('Exporter for item type {} not found'.format(item_type))
         exporter.export_item(self.converter.convert_item(item))
-
+    
         counter = self.counter_mapping.get(item_type)
         if counter is not None:
             counter.increment()
