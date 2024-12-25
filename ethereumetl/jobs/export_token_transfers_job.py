@@ -78,12 +78,18 @@ class ExportTokenTransfersJob(BaseJob):
         try:
             event_filter = self.web3.eth.filter(filter_params)
             events = event_filter.get_all_entries()
+            
         except ValueError as e:
-            if str(e) == "{'code': -32000, 'message': 'the method is currently not implemented: eth_newFilter'}":
-                self._supports_eth_newFilter = False
-                events = self.web3.eth.getLogs(filter_params)
+            # Handling cases where RPC nodes sometimes don't reply with the same error code
+            error_message = e.args[0]
+            code_or_0 = error_message.get('code')
+            if code_or_0 == -32000 or code_or_0 == -32601:
+            # if str(e) == "{'code': -32000, 'message': 'the method is currently not implemented: eth_newFilter'}":
+                    self._supports_eth_newFilter = False
+                    events = self.web3.eth.getLogs(filter_params)
             else:
                 raise(e)
+               
         for event in events:
             log = self.receipt_log_mapper.web3_dict_to_receipt_log(event)
             token_transfer = self.token_transfer_extractor.extract_transfer_from_log(log)

@@ -82,6 +82,10 @@ def rpc_response_batch_to_results(response):
 
 
 def rpc_response_to_result(response):
+    # When a RPC responds with a string such as `jsonrpc` this is a bug on the RPC side
+    if isinstance(response, str):
+        raise RetriableValueError(f"Response responded with  a str: `{response}`")
+
     result = response.get('result')
     if result is None:
         error_message = 'result is None in response {}.'.format(response)
