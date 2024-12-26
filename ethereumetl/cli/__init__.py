@@ -45,7 +45,7 @@ from ethereumetl.cli.get_block_range_for_date import get_block_range_for_date
 from ethereumetl.cli.get_block_range_for_timestamps import get_block_range_for_timestamps
 from ethereumetl.cli.get_keccak_hash import get_keccak_hash
 from ethereumetl.cli.stream import stream
-from ethereumetl.cli.noves_export_blocks_and_transactions import noves_export_blocks_and_transactions
+from ethereumetl.cli.noves_job import noves_full_export
 
 @click.group()
 @click.version_option(version='2.4.2')
@@ -82,5 +82,5 @@ cli.add_command(extract_field, "extract_field")
 
 # noves
 cli.add_command(
-    noves_export_blocks_and_transactions, "noves_export_blocks_and_transactions"
+    noves_full_export, "noves_full_export"
 )
